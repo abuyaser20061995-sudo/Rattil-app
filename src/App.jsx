@@ -5,6 +5,7 @@ import Splash from './pages/Splash/Splash.jsx'
 import Home from './pages/Home/Home.jsx'
 import Surahs from './pages/Surahs/Surahs.jsx'
 import SurahDetail from './pages/SurahDetail/SurahDetail.jsx'
+import MushafPage from './pages/MushafPage/MushafPage.jsx'
 
 function Placeholder({ title }) {
   return (
@@ -23,7 +24,7 @@ export default function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/quran" element={<Surahs />} />
           <Route path="/quran/surah/:surahId" element={<SurahDetail />} />
-          <Route path="/quran/read/:surahId" element={<Placeholder title="عرض المصحف الورقي" />} />
+          <Route path="/quran/page/:pageNumber" element={<MushafPage />} />
           <Route path="/memorization" element={<Placeholder title="الحفظ" />} />
           <Route path="/review" element={<Placeholder title="المراجعة والختمة" />} />
           <Route path="/more" element={<Placeholder title="المزيد" />} />
