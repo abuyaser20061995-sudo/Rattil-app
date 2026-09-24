@@ -1,0 +1,18 @@
+{
+  "appId": "com.rattel.quran",
+  "appName": "رتِّل",
+  "webDir": "dist",
+  "backgroundColor": "#0B3D2E",
+  "android": {
+    "allowMixedContent": false
+  },
+  "plugins": {
+    "CapacitorSQLite": {
+      "androidIsEncryption": false
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon",
+      "iconColor": "#0B3D2E"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+:root {
+  --color-primary: #0B3D2E;
+  --color-primary-light: #1A5C46;
+  --color-bg: #FAF7F0;
+  --color-surface: #FFFFFF;
+  --color-gold: #C9A66B;
+  --color-text: #1C2620;
+  --color-text-muted: #6B7568;
+  --color-border: #E7E2D6;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --font-ar: 'Tajawal', system-ui, sans-serif;
+  --font-quran: 'Amiri', serif;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #0F1712;
+    --color-surface: #17221C;
+    --color-text: #EDF2EE;
+    --color-text-muted: #9AA69C;
+    --color-border: #26332B;
+    --color-primary: #2E7D5B;
+    --color-primary-light: #3F9C74;
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #0F1712;
+  --color-surface: #17221C;
+  --color-text: #EDF2EE;
+  --color-text-muted: #9AA69C;
+  --color-border: #26332B;
+  --color-primary: #2E7D5B;
+  --color-primary-light: #3F9C74;
+}
