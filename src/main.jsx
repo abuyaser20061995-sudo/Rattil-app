@@ -10,7 +10,12 @@ import './styles/global.css';
 jeepSqlite(window);
 
 async function bootstrap() {
-  await initDatabase();
+  try {
+    await initDatabase();
+  } catch (err) {
+    console.error('DB init failed (متوقع مؤقتًا على المتصفح):', err);
+  }
+
   const root = ReactDOM.createRoot(document.getElementById('root'));
   root.render(
     <React.StrictMode>
