@@ -1,0 +1,55 @@
+.page {
+  padding: var(--space-3);
+}
+
+.inputWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+}
+
+.input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 15px;
+}
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: var(--space-3);
+}
+
+.resultItem {
+  text-align: right;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.resultSurah {
+  font-size: 12px;
+  color: var(--color-primary);
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.resultText {
+  font-family: var(--font-quran);
+  font-size: 18px;
+}
+
+.mark {
+  background: var(--color-gold);
+  color: #1C2620;
+  border-radius: 3px;
+  padding: 0 2px;
+}

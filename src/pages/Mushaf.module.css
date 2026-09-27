@@ -73,3 +73,34 @@
   margin: 0 6px;
   vertical-align: middle;
 }
+
+.topBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: var(--space-3);
+}
+
+.topBar .warning {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.searchIconBtn {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.backBtn {
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+}
