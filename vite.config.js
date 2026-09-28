@@ -7,6 +7,9 @@ export default defineConfig({
     host: true,
     port: 5173
   },
+  optimizeDeps: {
+    exclude: ['jeep-sqlite']
+  },
   build: {
     outDir: 'dist',
     sourcemap: false,
