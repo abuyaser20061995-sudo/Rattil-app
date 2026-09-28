@@ -5,6 +5,7 @@ import Mushaf from './pages/Mushaf.jsx';
 import Memorization from './pages/Memorization.jsx';
 import Review from './pages/Review.jsx';
 import More from './pages/More.jsx';
+import Ayati from './pages/Ayati.jsx';
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
           <Route path="/memorization" element={<Memorization />} />
           <Route path="/review" element={<Review />} />
           <Route path="/more" element={<More />} />
+          <Route path="/ayati" element={<Ayati />} />
         </Routes>
       </div>
       <BottomNav />
