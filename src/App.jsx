@@ -10,6 +10,7 @@ import WhatToRead from './pages/WhatToRead.jsx';
 import ManageSuggestions from './pages/ManageSuggestions.jsx';
 import DataBackup from './pages/DataBackup.jsx';
 import Settings from './pages/Settings.jsx';
+import Notes from './pages/Notes.jsx';
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
           <Route path="/manage-suggestions" element={<ManageSuggestions />} />
           <Route path="/backup" element={<DataBackup />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/notes" element={<Notes />} />
         </Routes>
       </div>
       <BottomNav />

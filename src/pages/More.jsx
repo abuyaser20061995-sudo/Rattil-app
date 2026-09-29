@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Star, ListChecks, DatabaseBackup, Settings as SettingsIcon } from 'lucide-react';
+import { Star, ListChecks, DatabaseBackup, Settings as SettingsIcon, StickyNote } from 'lucide-react';
 
 export default function More() {
   return (
@@ -8,6 +8,10 @@ export default function More() {
       <Link to="/ayati" className="card" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <Star size={20} color="var(--color-primary)" />
         <span style={{ fontWeight: 600 }}>آياتي</span>
+      </Link>
+      <Link to="/notes" className="card" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <StickyNote size={20} color="var(--color-primary)" />
+        <span style={{ fontWeight: 600 }}>ملاحظاتي</span>
       </Link>
       <Link to="/manage-suggestions" className="card" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <ListChecks size={20} color="var(--color-primary)" />
