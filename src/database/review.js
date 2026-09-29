@@ -79,3 +79,39 @@ export async function endSession(sessionId) {
     sessionId
   ]);
 }
+
+// إضافة مقطع مباشرة للمراجعة دون المرور بمستوى "جديد"
+// النتيجة: 'added' | 'promoted' | 'exists'
+export async function addToReview(surahId, ayahCount, start, end) {
+  if (!Number.isInteger(start) || !Number.isInteger(end)) {
+    throw new Error('أدخل أرقام آيات صحيحة');
+  }
+  if (start < 1 || end > ayahCount || start > end) {
+    throw new Error('النطاق غير صحيح (السورة فيها ' + ayahCount + ' آيات)');
+  }
+
+  const all = await listAllSegments();
+  const overlaps = all.filter(
+    (s) => s.surah_id === surahId && s.start_ayah <= end && s.end_ayah >= start
+  );
+
+  if (overlaps.length === 0) {
+    await run(
+      `INSERT INTO memorization (surah_id, start_ayah, end_ayah, level, memorized_at)
+       VALUES (?, ?, ?, 'needs_review', ?)`,
+      [surahId, start, end, new Date().toISOString()]
+    );
+    return 'added';
+  }
+
+  const same =
+    overlaps.length === 1 && overlaps[0].start_ayah === start && overlaps[0].end_ayah === end;
+
+  if (same && overlaps[0].level === 'new') {
+    await run("UPDATE memorization SET level = 'needs_review' WHERE id = ?", [overlaps[0].id]);
+    return 'promoted';
+  }
+  if (same) return 'exists';
+
+  throw new Error('هذا النطاق يتداخل مع مقطع موجود في الحفظ. عدّله من تبويب الحفظ.');
+}

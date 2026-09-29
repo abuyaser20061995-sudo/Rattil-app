@@ -1,17 +1,41 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { BookOpen, Brain, RotateCcw, Compass } from 'lucide-react';
+import { getTodayReview } from '../database/review.js';
 import styles from './Home.module.css';
 
 export default function Home() {
-  const [greeting, setGreeting] = useState('السلام عليكم 👋');
+  const navigate = useNavigate();
+  const [status, setStatus] = useState('loading');
+  const [dueCount, setDueCount] = useState(0);
 
   useEffect(() => {
     document.title = 'رتِّل — الرئيسية';
+    let alive = true;
+    getTodayReview()
+      .then((queue) => {
+        if (!alive) return;
+        setDueCount(queue.length);
+        setStatus('ok');
+      })
+      .catch(() => alive && setStatus('error'));
+    return () => {
+      alive = false;
+    };
   }, []);
+
+  const reviewText =
+    status === 'loading'
+      ? 'جارٍ التحميل…'
+      : status === 'error'
+      ? 'تعذّر تحميل المراجعة'
+      : dueCount === 0
+      ? 'لا توجد مقاطع للمراجعة اليوم'
+      : dueCount + ' مقطع يحتاج إلى مراجعة';
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.greeting}>{greeting}</h1>
+      <h1 className={styles.greeting}>السلام عليكم 👋</h1>
 
       <section className={`card ${styles.wirdCard}`}>
         <p className={styles.cardLabel}>وردك اليوم</p>
@@ -33,8 +57,13 @@ export default function Home() {
         <RotateCcw size={20} color="var(--color-primary)" />
         <div className={styles.rowText}>
           <p className={styles.cardLabel}>مراجعة اليوم</p>
-          <p className="text-muted">لا توجد مقاطع للمراجعة بعد</p>
+          <p className="text-muted">{reviewText}</p>
         </div>
+        {status === 'ok' && dueCount > 0 && (
+          <button className="btn-primary" onClick={() => navigate('/review')}>
+            ابدأ
+          </button>
+        )}
       </section>
 
       <button className={styles.whatToRead}>

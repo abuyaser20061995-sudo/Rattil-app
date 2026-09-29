@@ -120,3 +120,53 @@
   border-radius: var(--radius-sm);
   font-size: 12px;
 }
+
+.btnRow {
+  display: flex;
+  gap: 10px;
+}
+
+.micBtn,
+.micActive {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--radius-sm);
+  padding: 12px 20px;
+  font-weight: 600;
+  font-size: 15px;
+  color: #fff;
+}
+
+.micBtn {
+  background: var(--color-primary);
+}
+
+.micActive {
+  background: #7a1f1f;
+}
+
+.word {
+  display: inline-block;
+  padding: 0 4px;
+  border-radius: 6px;
+}
+
+.wordCorrect {
+  background: rgba(46, 125, 91, 0.3);
+}
+
+.wordMissed {
+  background: rgba(230, 145, 30, 0.3);
+}
+
+.wordHidden {
+  color: var(--color-text-muted);
+  letter-spacing: 2px;
+}
+
+.wordNext {
+  outline: 2px solid var(--color-gold);
+}

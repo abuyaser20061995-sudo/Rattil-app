@@ -2,11 +2,16 @@ import { useState } from 'react';
 import { Headphones, Brain, RotateCcw, Star, StickyNote, BookOpen, Copy, X } from 'lucide-react';
 import { addToFavorites } from '../database/collections.js';
 import { addAyahToMemorization } from '../database/memorization.js';
+import { addToReview } from '../database/review.js';
 import { PLACEHOLDER_SURAHS } from '../data/placeholder-data.js';
 import styles from './AyahActionSheet.module.css';
 
 export default function AyahActionSheet({ ayah, onClose }) {
   const [message, setMessage] = useState('');
+
+  function surahOf() {
+    return PLACEHOLDER_SURAHS.find((s) => s.number === ayah.surah_number);
+  }
 
   async function saveToAyati() {
     try {
@@ -20,9 +25,23 @@ export default function AyahActionSheet({ ayah, onClose }) {
 
   async function addToMemorization() {
     try {
-      const surah = PLACEHOLDER_SURAHS.find((s) => s.number === ayah.surah_number);
-      await addAyahToMemorization(ayah.surah_number, surah.ayah_count, ayah.ayah_number);
+      await addAyahToMemorization(ayah.surah_number, surahOf().ayah_count, ayah.ayah_number);
       setMessage('أُضيفت إلى الحفظ ✓');
+      setTimeout(onClose, 900);
+    } catch (e) {
+      setMessage(e?.message || 'تعذر الإضافة');
+    }
+  }
+
+  async function addToReviewAction() {
+    try {
+      const r = await addToReview(
+        ayah.surah_number,
+        surahOf().ayah_count,
+        ayah.ayah_number,
+        ayah.ayah_number
+      );
+      setMessage(r === 'exists' ? 'الآية موجودة بالفعل في المراجعة' : 'أُضيفت إلى المراجعة ✓');
       setTimeout(onClose, 900);
     } catch (e) {
       setMessage(e?.message || 'تعذر الإضافة');
@@ -32,7 +51,7 @@ export default function AyahActionSheet({ ayah, onClose }) {
   const actions = [
     { icon: Headphones, label: 'استماع', onPress: onClose },
     { icon: Brain, label: 'إضافة للحفظ', onPress: addToMemorization },
-    { icon: RotateCcw, label: 'إضافة للمراجعة', onPress: onClose },
+    { icon: RotateCcw, label: 'إضافة للمراجعة', onPress: addToReviewAction },
     { icon: Star, label: 'حفظ في آياتي', onPress: saveToAyati },
     { icon: StickyNote, label: 'إضافة ملاحظة', onPress: onClose },
     { icon: BookOpen, label: 'التفسير', onPress: onClose },
