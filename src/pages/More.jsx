@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Star, Settings, DatabaseBackup } from 'lucide-react';
+import { Star, ListChecks, DatabaseBackup, Settings as SettingsIcon } from 'lucide-react';
 
 export default function More() {
   return (
@@ -10,12 +10,16 @@ export default function More() {
         <span style={{ fontWeight: 600 }}>آياتي</span>
       </Link>
       <Link to="/manage-suggestions" className="card" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <Settings size={20} color="var(--color-primary)" />
+        <ListChecks size={20} color="var(--color-primary)" />
         <span style={{ fontWeight: 600 }}>إدارة مقترحات «ماذا أقرأ؟»</span>
       </Link>
       <Link to="/backup" className="card" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <DatabaseBackup size={20} color="var(--color-primary)" />
         <span style={{ fontWeight: 600 }}>النسخ الاحتياطي</span>
+      </Link>
+      <Link to="/settings" className="card" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <SettingsIcon size={20} color="var(--color-primary)" />
+        <span style={{ fontWeight: 600 }}>الإعدادات</span>
       </Link>
     </div>
   );

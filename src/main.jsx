@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { HashRouter } from 'react-router-dom';
 import App from './App.jsx';
 import { initDatabase, query } from './database/db.js';
+import { getSettings, applyTheme, applyFontSize } from './database/settings.js';
 import './styles/tokens.css';
 import './styles/global.css';
 
@@ -38,5 +39,8 @@ Promise.race([initDatabase(), timeout])
   .then(async () => {
     const rows = await query("SELECT COUNT(*) AS c FROM sqlite_master WHERE type='table'");
     showBanner('قاعدة البيانات تعمل ✓ (' + rows[0].c + ' جدولًا)', true);
+    const settings = await getSettings();
+    applyTheme(settings.theme);
+    applyFontSize(settings.font_size);
   })
   .catch((err) => showBanner('قاعدة البيانات: ' + (err?.message || String(err))));
