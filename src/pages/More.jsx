@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Star } from 'lucide-react';
+import { Star, Settings, DatabaseBackup } from 'lucide-react';
 
 export default function More() {
   return (
@@ -8,6 +8,14 @@ export default function More() {
       <Link to="/ayati" className="card" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <Star size={20} color="var(--color-primary)" />
         <span style={{ fontWeight: 600 }}>آياتي</span>
+      </Link>
+      <Link to="/manage-suggestions" className="card" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <Settings size={20} color="var(--color-primary)" />
+        <span style={{ fontWeight: 600 }}>إدارة مقترحات «ماذا أقرأ؟»</span>
+      </Link>
+      <Link to="/backup" className="card" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <DatabaseBackup size={20} color="var(--color-primary)" />
+        <span style={{ fontWeight: 600 }}>النسخ الاحتياطي</span>
       </Link>
     </div>
   );

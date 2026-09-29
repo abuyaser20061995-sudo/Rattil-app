@@ -66,7 +66,7 @@ export default function Home() {
         )}
       </section>
 
-      <button className={styles.whatToRead}>
+      <button className={styles.whatToRead} onClick={() => navigate('/what-to-read')}>
         <Compass size={22} />
         <span>ماذا أقرأ؟</span>
       </button>

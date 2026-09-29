@@ -6,6 +6,9 @@ import Memorization from './pages/Memorization.jsx';
 import Review from './pages/Review.jsx';
 import More from './pages/More.jsx';
 import Ayati from './pages/Ayati.jsx';
+import WhatToRead from './pages/WhatToRead.jsx';
+import ManageSuggestions from './pages/ManageSuggestions.jsx';
+import DataBackup from './pages/DataBackup.jsx';
 
 export default function App() {
   return (
@@ -18,6 +21,9 @@ export default function App() {
           <Route path="/review" element={<Review />} />
           <Route path="/more" element={<More />} />
           <Route path="/ayati" element={<Ayati />} />
+          <Route path="/what-to-read" element={<WhatToRead />} />
+          <Route path="/manage-suggestions" element={<ManageSuggestions />} />
+          <Route path="/backup" element={<DataBackup />} />
         </Routes>
       </div>
       <BottomNav />
