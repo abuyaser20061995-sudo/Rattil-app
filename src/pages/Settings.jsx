@@ -42,6 +42,7 @@ export default function SettingsPage() {
     for (const t of tables) {
       await run('DELETE FROM ' + t);
     }
+    try { localStorage.removeItem('rattil_topic_passages_v1'); } catch { /* ignore */ }
     setConfirmingWipe(false);
     setWiped(true);
   }
@@ -51,28 +52,6 @@ export default function SettingsPage() {
   return (
     <div className={styles.page}>
       <h1 className={styles.title}>الإعدادات</h1>
-
-      <section className={`card ${styles.section}`}>
-        <p className={styles.sectionTitle}>المصحف</p>
-        <div className={styles.fontRow}>
-          <span className="text-muted">حجم الخط</span>
-          <div className={styles.fontControls}>
-            <button
-              className={styles.fontBtn}
-              onClick={() => set({ font_size: Math.max(16, settings.font_size - 2) })}
-            >
-              أصغر
-            </button>
-            <span className={styles.fontValue}>{settings.font_size}</span>
-            <button
-              className={styles.fontBtn}
-              onClick={() => set({ font_size: Math.min(40, settings.font_size + 2) })}
-            >
-              أكبر
-            </button>
-          </div>
-        </div>
-      </section>
 
       <section className={`card ${styles.section}`}>
         <p className={styles.sectionTitle}>المظهر</p>

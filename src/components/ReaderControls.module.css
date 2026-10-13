@@ -1,0 +1,113 @@
+.btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  z-index: 100;
+}
+
+.sheet {
+  background: var(--color-surface);
+  width: 100%;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: var(--space-4) var(--space-3) calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+}
+
+.title {
+  text-align: center;
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: var(--space-3);
+}
+
+.seg {
+  display: flex;
+  gap: 8px;
+  margin-bottom: var(--space-3);
+}
+
+.segBtn,
+.segActive {
+  flex: 1;
+  padding: 12px 8px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.segActive {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.label {
+  text-align: center;
+  margin-bottom: var(--space-2);
+}
+
+.sizeRow {
+  direction: ltr;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: var(--space-3);
+}
+
+.range {
+  flex: 1;
+  accent-color: var(--color-primary);
+}
+
+.round {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 22px;
+  line-height: 1;
+}
+
+.reset {
+  width: 100%;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-primary);
+  margin-bottom: var(--space-2);
+}
+
+.note {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 1.7;
+  margin-bottom: var(--space-3);
+}
+
+.done {
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: #ffffff;
+  font-weight: 700;
+}

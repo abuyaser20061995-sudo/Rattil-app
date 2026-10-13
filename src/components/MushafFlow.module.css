@@ -1,0 +1,59 @@
+.flow {
+  position: absolute;
+  inset: 4px 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 6px 14px 28px;
+  direction: rtl;
+  text-align: justify;
+  font-family: var(--font-quran);
+  font-size: var(--flow-fs);
+  line-height: 2.3;
+  color: var(--color-text);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.banner {
+  margin: 6px 0 4px;
+  font-size: 16px;
+  line-height: normal;
+}
+
+.basmala {
+  text-align: center;
+  font-size: 1.1em;
+  line-height: 2.2;
+  margin-bottom: 4px;
+}
+
+.ayah {
+  border-radius: 4px;
+}
+
+.num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2em;
+  height: 2em;
+  font-family: var(--font-ar);
+  font-size: 0.5em;
+  line-height: 1;
+  border: 1.5px solid var(--color-gold);
+  border-radius: 50%;
+  margin: 0 0.4em;
+  vertical-align: middle;
+}
+
+.hl {
+  background: color-mix(in srgb, var(--color-gold) 30%, transparent);
+  border-radius: 6px;
+}
+
+.hlNum {
+  background: var(--color-gold);
+  color: #ffffff;
+}

@@ -1,18 +1,26 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Search as SearchIcon, X } from 'lucide-react';
-import { PLACEHOLDER_SURAHS, PLACEHOLDER_AYAHS } from '../data/placeholder-data.js';
+import { searchAyahs } from '../database/quran.js';
 import styles from './Search.module.css';
 
 export default function Search({ onOpenAyah }) {
   const [term, setTerm] = useState('');
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const results = term.trim().length === 0
-    ? []
-    : PLACEHOLDER_AYAHS.filter(a => a.text.includes(term));
-
-  function surahName(number) {
-    return PLACEHOLDER_SURAHS.find(s => s.number === number)?.name_ar || '';
-  }
+  useEffect(() => {
+    if (!term.trim()) {
+      setResults([]);
+      return;
+    }
+    setLoading(true);
+    const timer = setTimeout(() => {
+      searchAyahs(term)
+        .then(setResults)
+        .finally(() => setLoading(false));
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [term]);
 
   function highlight(text) {
     if (!term) return text;
@@ -33,7 +41,7 @@ export default function Search({ onOpenAyah }) {
           className={styles.input}
           placeholder="ابحث في القرآن..."
           value={term}
-          onChange={e => setTerm(e.target.value)}
+          onChange={(e) => setTerm(e.target.value)}
         />
         {term && (
           <button onClick={() => setTerm('')}>
@@ -42,22 +50,18 @@ export default function Search({ onOpenAyah }) {
         )}
       </div>
 
-      {term && results.length === 0 && (
-        <p className="text-muted" style={{ textAlign: 'center', marginTop: 24 }}>
-          لا توجد نتائج
-        </p>
+      {loading && <p className="text-muted" style={{ textAlign: 'center', marginTop: 24 }}>جارٍ البحث…</p>}
+      {!loading && term && results.length === 0 && (
+        <p className="text-muted" style={{ textAlign: 'center', marginTop: 24 }}>لا توجد نتائج</p>
+      )}
+      {results.length === 100 && (
+        <p className="text-muted" style={{ textAlign: 'center' }}>تُعرض أول 100 نتيجة فقط</p>
       )}
 
       <div className={styles.results}>
-        {results.map(a => (
-          <button
-            key={`${a.surah_number}-${a.ayah_number}`}
-            className={styles.resultItem}
-            onClick={() => onOpenAyah && onOpenAyah(a)}
-          >
-            <p className={styles.resultSurah}>
-              {surahName(a.surah_number)} — آية {a.ayah_number}
-            </p>
+        {results.map((a) => (
+          <button key={a.id} className={styles.resultItem} onClick={() => onOpenAyah && onOpenAyah(a)}>
+            <p className={styles.resultSurah}>{a.surah_name} — آية {a.ayah_number}</p>
             <p className={styles.resultText}>{highlight(a.text)}</p>
           </button>
         ))}

@@ -11,6 +11,8 @@ import ManageSuggestions from './pages/ManageSuggestions.jsx';
 import DataBackup from './pages/DataBackup.jsx';
 import Settings from './pages/Settings.jsx';
 import Notes from './pages/Notes.jsx';
+import ProgressPage from './pages/Progress.jsx';
+import ImportQuran from './pages/ImportQuran.jsx';
 
 export default function App() {
   return (
@@ -28,6 +30,8 @@ export default function App() {
           <Route path="/backup" element={<DataBackup />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/notes" element={<Notes />} />
+          <Route path="/progress" element={<ProgressPage />} />
+          <Route path="/import-quran" element={<ImportQuran />} />
         </Routes>
       </div>
       <BottomNav />

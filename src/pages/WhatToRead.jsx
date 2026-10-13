@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PLACEHOLDER_SURAHS } from '../data/placeholder-data.js';
 import { generateAutoSegments } from '../utils/segmentation.js';
-import { listSuggestions } from '../database/prayerSuggestions.js';
+import { listSurahs } from '../database/quran.js';
+import { listSuggestions, ensureTopicPassages, pageOfAyah } from '../database/prayerSuggestions.js';
 import { logPrayerReading, recentlyReadKeys } from '../database/prayerReadings.js';
 import styles from './WhatToRead.module.css';
 
@@ -19,31 +19,35 @@ const MODES = [
   { key: 'coherent', label: '🔗 مقطع مترابط' },
   { key: 'topic', label: '🎯 موضوع' }
 ];
-const TOPICS = ['الصبر', 'التقوى', 'التوبة', 'الإيمان', 'الجنة', 'النار', 'قصص الأنبياء', 'الدعاء', 'بر الوالدين', 'الآخرة'];
-
-function surahName(n) {
-  return PLACEHOLDER_SURAHS.find((s) => s.number === n)?.name_ar || 'سورة ' + n;
-}
+const TOPICS = [
+  'الصبر', 'التقوى', 'التوبة', 'الإيمان', 'الجنة', 'النار', 'قصص الأنبياء', 'الدعاء',
+  'بر الوالدين', 'الآخرة', 'التوكل', 'الشكر', 'الرحمة', 'التوحيد', 'الأخلاق', 'العلم',
+  'الصلاة', 'الإنفاق', 'رمضان', 'الجمعة', 'العيد'
+];
 
 function keyOf(s) {
   return s.surah_id + ':' + s.start_ayah + '-' + s.end_ayah;
 }
 
-async function buildPool() {
+function topicList(s) {
+  return s.topics ? String(s.topics).split(/[،,]/).map((t) => t.trim()).filter(Boolean) : [];
+}
+
+async function buildPool(surahs) {
   const manual = await listSuggestions();
-  const auto = generateAutoSegments(PLACEHOLDER_SURAHS);
+  const auto = generateAutoSegments(surahs);
   const manualKeys = new Set(manual.map(keyOf));
-  // عند وجود مقترح يدوي مُصنَّف لنفس النطاق، يُفضَّل لأنه يحمل موضوعًا حقيقيًا
   return [...manual, ...auto.filter((a) => !manualKeys.has(keyOf(a)))];
 }
 
 export default function WhatToRead() {
   const navigate = useNavigate();
+  const [surahs, setSurahs] = useState([]);
   const [step, setStep] = useState('prayer');
   const [prayer, setPrayer] = useState(null);
   const [duration, setDuration] = useState(null);
   const [mode, setMode] = useState(null);
-  const [surahFilter, setSurahFilter] = useState(PLACEHOLDER_SURAHS[0].number);
+  const [surahFilter, setSurahFilter] = useState(1);
   const [topicFilter, setTopicFilter] = useState(TOPICS[0]);
   const [avoidRepeat, setAvoidRepeat] = useState(true);
   const [repeatDays, setRepeatDays] = useState(14);
@@ -51,22 +55,43 @@ export default function WhatToRead() {
   const [error, setError] = useState('');
   const [marked, setMarked] = useState(false);
 
+  useEffect(() => {
+    let on = true;
+    (async () => {
+      try {
+        await ensureTopicPassages();
+        const list = await listSurahs();
+        if (on) setSurahs(list);
+      } catch (e) {
+        if (on) setError(e?.message || String(e));
+      }
+    })();
+    return () => {
+      on = false;
+    };
+  }, []);
+
+  const surahName = (n) => surahs.find((s) => s.number === n)?.name_ar || 'سورة ' + n;
+
   async function findSuggestion(chosenMode) {
+    const prev = suggestion;
     setError('');
     setSuggestion(null);
     setMarked(false);
 
-    let pool = await buildPool();
+    if (surahs.length === 0) {
+      setError('بيانات القرآن لم تُحمَّل بعد، حاول بعد لحظات.');
+      return;
+    }
+
+    let pool = await buildPool(surahs);
 
     if (chosenMode === 'topic') {
-      pool = pool.filter((s) => s.topics === topicFilter);
+      pool = pool.filter((s) => topicList(s).includes(topicFilter));
       if (pool.length === 0) {
         setError('لا توجد مقاطع مُصنَّفة بموضوع «' + topicFilter + '» بعد. يمكنك إضافتها من «إدارة المقترحات» في المزيد.');
         return;
       }
-    } else if (chosenMode === 'coherent') {
-      // نُفضّل المقاطع المُصنَّفة يدويًا (أعلى درجة ترابط) قبل التقطيع الآلي
-      pool = [...pool].sort((a, b) => (b.coherence_score || 0) - (a.coherence_score || 0));
     } else if (chosenMode === 'surah') {
       pool = pool.filter((s) => s.surah_id === Number(surahFilter));
     }
@@ -78,10 +103,20 @@ export default function WhatToRead() {
       return;
     }
 
+    if (chosenMode === 'auto' || chosenMode === 'coherent') {
+      const best = pool.filter((s) => s.topics || (s.coherence_score || 0) >= 0.8);
+      if (best.length > 0) pool = best;
+    }
+
     if (avoidRepeat) {
       const excluded = await recentlyReadKeys(repeatDays);
       const filtered = pool.filter((s) => !excluded.has(keyOf(s)));
       if (filtered.length > 0) pool = filtered;
+    }
+
+    if (prev) {
+      const others = pool.filter((s) => keyOf(s) !== keyOf(prev));
+      if (others.length > 0) pool = others;
     }
 
     const pick = pool[Math.floor(Math.random() * pool.length)];
@@ -92,6 +127,13 @@ export default function WhatToRead() {
   async function markAsRead() {
     await logPrayerReading(prayer, suggestion.surah_id, suggestion.start_ayah, suggestion.end_ayah);
     setMarked(true);
+  }
+
+  async function openInMushaf() {
+    const page = await pageOfAyah(suggestion.surah_id, suggestion.start_ayah);
+    navigate('/mushaf', {
+      state: { page: page || undefined, hl: { surah: suggestion.surah_id, from: suggestion.start_ayah, to: suggestion.end_ayah } }
+    });
   }
 
   function restart() {
@@ -105,6 +147,7 @@ export default function WhatToRead() {
   }
 
   if (step === 'result' && suggestion) {
+    const topics = topicList(suggestion).join(' · ');
     return (
       <div className={styles.page}>
         <button className={styles.back} onClick={restart}>← البداية</button>
@@ -113,11 +156,11 @@ export default function WhatToRead() {
           <p className={styles.resultSurah}>{surahName(suggestion.surah_id)}</p>
           <p className={styles.resultRange}>الآيات {suggestion.start_ayah}–{suggestion.end_ayah}</p>
           <p className="text-muted">
-            {suggestion.topics ? suggestion.topics + ' — ' : ''}{suggestion.estimated_duration}
+            {topics ? topics + ' — ' : ''}{suggestion.estimated_duration}
           </p>
         </div>
 
-        <button className="btn-primary" style={{ width: '100%' }} onClick={() => navigate('/mushaf')}>
+        <button className="btn-primary" style={{ width: '100%' }} onClick={openInMushaf}>
           فتح في المصحف
         </button>
 
@@ -183,7 +226,7 @@ export default function WhatToRead() {
             <>
               <p className={styles.label}>اختر السورة</p>
               <select className={styles.select} value={surahFilter} onChange={(e) => setSurahFilter(e.target.value)}>
-                {PLACEHOLDER_SURAHS.map((s) => <option key={s.number} value={s.number}>{s.name_ar}</option>)}
+                {surahs.map((s) => <option key={s.number} value={s.number}>{s.name_ar}</option>)}
               </select>
             </>
           )}
@@ -194,7 +237,7 @@ export default function WhatToRead() {
                 {TOPICS.map((t) => <option key={t} value={t}>{t}</option>)}
               </select>
               <p className="text-muted">
-                هذا الخيار يعرض فقط المقاطع التي صنّفتها أنت يدويًا بموضوع، من «إدارة المقترحات» في المزيد.
+                تُعرض المقاطع المصنّفة بهذا الموضوع، الجاهزة وما أضفته من «إدارة المقترحات» في المزيد.
               </p>
             </>
           )}

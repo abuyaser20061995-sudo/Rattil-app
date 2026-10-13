@@ -5,6 +5,7 @@ import { CREATE_TABLES_SQL, DEFAULT_SETTINGS_SQL, SCHEMA_VERSION } from './schem
 const DB_NAME = 'rattil_db';
 const WEB_KEY = 'rattil_web_db_v1';
 let db = null;
+let autoSaveEnabled = true;
 
 function bytesToBase64(bytes) {
   let binary = '';
@@ -22,7 +23,8 @@ function base64ToBytes(b64) {
   return bytes;
 }
 
-// نسخة المتصفح (للمعاينة فقط): sql.js + حفظ في localStorage
+let rawDbRef = null;
+
 async function createWebDatabase() {
   const mod = await import('sql.js');
   const initSqlJs = mod.default || mod;
@@ -37,9 +39,11 @@ async function createWebDatabase() {
   }
 
   const raw = new SQL.Database(saved || undefined);
+  rawDbRef = raw;
   let timer = null;
 
   function scheduleSave() {
+    if (!autoSaveEnabled) return;
     clearTimeout(timer);
     timer = setTimeout(() => {
       try {
@@ -74,7 +78,6 @@ async function createWebDatabase() {
   };
 }
 
-// نسخة أندرويد: SQLite الأصلي
 async function createNativeDatabase() {
   const sqlite = new SQLiteConnection(CapacitorSQLite);
   const isConn = (await sqlite.isConnection(DB_NAME, false)).result;
@@ -111,4 +114,32 @@ export async function run(sql, params = []) {
 export async function isQuranDataLoaded() {
   const rows = await query('SELECT COUNT(*) as c FROM ayahs');
   return (rows[0]?.c || 0) > 0;
+}
+
+// للعمليات الضخمة (استيراد القرآن مثلاً): نوقف الحفظ التلقائي بعد كل سطر،
+// وننفّذ حفظًا واحدًا فقط عند الانتهاء — هذا يختصر وقت العمليات الكبيرة من دقائق إلى ثوانٍ.
+export async function withoutAutoSave(fn) {
+  autoSaveEnabled = false;
+  try {
+    const result = await fn();
+    return result;
+  } finally {
+    autoSaveEnabled = true;
+    if (Capacitor.getPlatform() === 'web' && rawDbRef) {
+      try {
+        localStorage.setItem(WEB_KEY, bytesToBase64(rawDbRef.export()));
+      } catch (e) {
+        console.warn('تعذر حفظ القاعدة بعد العملية الكبيرة', e);
+      }
+    }
+  }
+}
+
+export async function runMigrations() {
+  const d = getDb();
+  try {
+    await d.execute('ALTER TABLE ayahs ADD COLUMN text_normalized TEXT;');
+  } catch (e) {
+    // العمود موجود بالفعل من تشغيل سابق — تجاهل الخطأ عمدًا
+  }
 }
